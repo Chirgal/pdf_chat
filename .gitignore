@@ -1,0 +1,5 @@
+/.env
+/.streamlit
+/.venv
+/__pycache__
+/astra_test.py

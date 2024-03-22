@@ -1,0 +1,7 @@
+streamlit
+langchain==0.1.13
+langchain-astradb==0.1.0
+sentence-transformers
+pypdf2
+requests
+python-dotenv
