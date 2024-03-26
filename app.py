@@ -2,7 +2,7 @@ import streamlit as st
 import time
 import requests
 from embed import load_pdfs_to_vector_store2, load_vector_store, get_top_context
-import io
+import io, math
 
 MODEL1 = 'mistralai/Mixtral-8x7B-Instruct-v0.1'
 MODEL2 = 'mistralai/Mistral-7B-Instruct-v0.2'
@@ -66,8 +66,11 @@ with st.sidebar:
     
 # Accept user input
 if prompt := st.chat_input("Ask me anything about your pdf document"):
-    context = get_top_context(vstore, prompt)
-    prompt_inst = f"[INST]{prompt}\nUse only below context to generate a valid short answer:\n\n{context}[/INST]"
+    context, score = get_top_context(vstore, prompt)
+    if round(score, 1) <= 0.6:
+        prompt_inst = f"[INST]Reply you are not able to answer.[/INST]"
+    else:
+        prompt_inst = f"[INST]{prompt}\nUse only below context to generate a valid short answer:\n\n{context}[/INST]"
     print(prompt_inst)
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})

@@ -5,12 +5,13 @@ from langchain_community.embeddings.huggingface import HuggingFaceEmbeddings
 from langchain_community.document_loaders import PyPDFLoader
 from PyPDF2 import PdfReader
 import io
-import streamlit as st
+# import streamlit as st
+from dotenv import load_dotenv
+load_dotenv()
 
-os.environ["ASTRA_DB_APPLICATION_TOKEN"] = st.secrets["ASTRA_DB_APPLICATION_TOKEN"]
-os.environ["ASTRA_DB_API_ENDPOINT"] = st.secrets["ASTRA_DB_API_ENDPOINT"]
+# os.environ["ASTRA_DB_APPLICATION_TOKEN"] = st.secrets["ASTRA_DB_APPLICATION_TOKEN"]
+# os.environ["ASTRA_DB_API_ENDPOINT"] = st.secrets["ASTRA_DB_API_ENDPOINT"]
 
-@st.cache_resource
 def load_embedding_model(model_name: str = "all-MiniLM-L6-v2"):
     """
     Instantiate a HuggingFaceEmbeddings object with the specified model name.
@@ -76,20 +77,21 @@ def load_pdfs_to_vector_store2(docs, vectore_store):
     vectore_store.add_documents(documents)
     
 def get_top_context(vectore_store, ques):
-    results = vectore_store.similarity_search(ques, k=1)
+    results = vectore_store.similarity_search_with_score(ques, k=1)
     print(results)
-    return results[0].page_content
+    return results[0][0].page_content, results[0][1]
     
     
 if __name__ == '__main__':
     
-    ques = "What is stirred-tank reactor ?"
+    ques = "Describe  PROCESSES OF RECOMBINANT DNA TECHNOLOGY."
     docs = ["D:\\Downloads\\pdf\\lebo109.pdf"]
     
     vstore = load_vector_store('test')
     # load_pdfs_to_vector_store(docs, vstore)
     
-    results = vstore.similarity_search(ques, k=3)
-    print(results)
+    results = vstore.similarity_search_with_score(ques, k=1)
+    print(results[0][0].page_content)
+    print(results[0][1])
     # for res in results:
     #     print(f"* {res.page_content} [{res.metadata}]")
