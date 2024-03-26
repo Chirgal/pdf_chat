@@ -1,7 +1,7 @@
 import streamlit as st
 import time
 import requests
-from embed import load_pdfs_to_vector_store2, load_vector_store, get_top_context
+from embed import load_pdfs_to_vector_store2, load_vector_store, get_top_context, fetch_doc_names, create_sqlite_table
 import io, math
 
 MODEL1 = 'mistralai/Mixtral-8x7B-Instruct-v0.1'
@@ -12,6 +12,7 @@ COLLECTION_NAME = 'PDF_for_chat'
 
 API_URL = F"https://api-inference.huggingface.co/models/{MODEL}"
 headers = {"Authorization": f"Bearer {st.secrets['HF_API_TOKEN']}"}
+create_sqlite_table()
 
 @st.cache_resource
 def get_vectore_store():
@@ -62,11 +63,17 @@ with st.sidebar:
                 st.info("Done")
             else:
                 st.warning("No file(s) to process !")
+    
+    doc_names = fetch_doc_names()         
+    options = st.multiselect(
+    '*OR* you can choose from uploaded PDF documents.',
+    doc_names,
+    )
 
     
 # Accept user input
 if prompt := st.chat_input("Ask me anything about your pdf document"):
-    context, score = get_top_context(vstore, prompt)
+    context, score = get_top_context(vstore, prompt, options)
     if round(score, 1) <= 0.6:
         prompt_inst = f"[INST]Reply you are not able to answer.[/INST]"
     else:
