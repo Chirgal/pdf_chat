@@ -4,3 +4,4 @@ langchain-astradb==0.1.0
 sentence-transformers
 pypdf2
 requests
+python-dotenv
