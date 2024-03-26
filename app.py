@@ -73,7 +73,7 @@ with st.sidebar:
     
 # Accept user input
 if prompt := st.chat_input("Ask me anything about your pdf document"):
-    context, score = get_top_context(vstore, prompt, options)
+    context, score = get_top_context(vstore, prompt, list(set(options)))
     if round(score, 1) <= 0.6:
         prompt_inst = f"[INST]Reply you are not able to answer.[/INST]"
     else:
